@@ -7,7 +7,7 @@ const Layout:React.FC<React.PropsWithChildren> = ({children}) => {
       <header>
         <NavBar />
       </header>
-      <main className='container-fluid'>
+      <main className='container-fluid p-0'>
         {children}
       </main>
     </>

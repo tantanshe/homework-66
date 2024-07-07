@@ -20,7 +20,7 @@ const AddMeal = () => {
       setMeal(response.data);
     }
   }, []);
- 
+
   useEffect(() => {
     if (id !== undefined) {
       void fetchOneMeal(id);
@@ -52,9 +52,10 @@ const AddMeal = () => {
         await axiosApi.put(`/meals/${id}.json`, newMeal);
       } else {
         await axiosApi.post('/meals.json', newMeal);
+        navigate('/');
       }
-    } finally {
-      navigate('/');
+    } catch (error) {
+      console.error(error);
     }
   };
 
