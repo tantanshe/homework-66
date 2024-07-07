@@ -79,23 +79,34 @@ const Home = () => {
           {(meals.length === 0 && !isLoading) && (
             <h5>There are no meals yet</h5>
           )}
-          <div className="mt-3">
+          <div className="mt-3 d-flex justify-content-between align-items-center">
             <h4>Total Calories: {totalCalories} kcal</h4>
-            <Link to="/addMeal" className="btn btn-primary mt-3">Add Meal</Link>
+            <Link to="/addMeal" className="btn btn-primary ps-5 pe-5">Add Meal</Link>
           </div>
           {meals.map(meal => (
             <div className="card mb-3 mt-3" key={meal.id}>
-              <div className="card-body">
-                <h5 className="card-title">{getTimeName(meal.time)}</h5>
-                <p className="card-text">{meal.description}</p>
-                <p className="card-text">{meal.calories} kcal</p>
-                <div className="d-flex justify-content-end">
-                  <Link to={`/meals/${meal.id}/edit`} className="btn btn-dark ps-5 pe-5">Edit</Link>
-                  <button onClick={() => deleteMeal(meal.id as string)} className="btn btn-danger ms-3 ps-5 pe-5" disabled={isDeleting}>
-                    {isDeleting && <ButtonSpinner/>}
-                    Delete
-                  </button>
+              <div className="card-body d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 className="card-title text-muted">{getTimeName(meal.time)}</h5>
+                  <p className="card-text">{meal.description}</p>
+
                 </div>
+                <div className='d-flex align-items-center'>
+                  <p className="card-text me-5 mb-0"><strong>{meal.calories} kcal</strong></p>
+                  <div className="d-flex justify-content-end flex-column w-10">
+                    <Link to={`/meals/${meal.id}/edit`} className="btn btn-success">
+                      <img src='https://icons.veryicon.com/png/o/miscellaneous/linear-small-icon/edit-246.png'
+                           alt="edit" className="button-icon"/>
+                    </Link>
+                    <button onClick={() => deleteMeal(meal.id as string)} className="btn btn-danger mt-3"
+                            disabled={isDeleting}>
+                      {isDeleting && <ButtonSpinner/>}
+                      <img src='https://static-00.iconduck.com/assets.00/delete-icon-1877x2048-1t1g6f82.png' alt="trash"
+                           className="button-icon"/>
+                    </button>
+                  </div>
+                </div>
+
               </div>
             </div>
           ))}
