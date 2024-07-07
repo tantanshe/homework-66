@@ -3,11 +3,13 @@ import {Link, useParams} from 'react-router-dom';
 import {Meal, times} from '../../types';
 import axiosApi from '../../axiosApi';
 import Spinner from '../../components/Spinner/Spinner';
+import ButtonSpinner from '../../components/Spinner/ButtonSpinner';
 
 const Home = () => {
   const [meals, setMeals] = useState<Meal[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [totalCalories, setTotalCalories] = useState<number>(0);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const {id} = useParams();
 
   const fetchMeals = useCallback(async () => {
@@ -16,7 +18,6 @@ const Home = () => {
     try {
       let response;
       response = await axiosApi.get<Meal | null>('meals.json');
-
       const mealsResponse = response.data;
 
       if (mealsResponse) {
@@ -51,7 +52,7 @@ const Home = () => {
   }, [fetchMeals, id]);
 
   const deleteMeal = async (id: string) => {
-    setIsLoading(true);
+    setIsDeleting(true);
     try {
       await axiosApi.delete(`meals/${id}.json`);
       const updatedMeals = meals.filter(meal => meal.id !== id);
@@ -61,7 +62,7 @@ const Home = () => {
     } catch (error) {
       console.error(error);
     } finally {
-      setIsLoading(false);
+      setIsDeleting(false);
     }
   };
 
@@ -90,7 +91,8 @@ const Home = () => {
                 <p className="card-text">{meal.calories} kcal</p>
                 <div className="d-flex justify-content-end">
                   <Link to={`/meals/${meal.id}/edit`} className="btn btn-dark ps-5 pe-5">Edit</Link>
-                  <button onClick={() => deleteMeal(meal.id as string)} className="btn btn-danger ms-3 ps-5 pe-5">
+                  <button onClick={() => deleteMeal(meal.id as string)} className="btn btn-danger ms-3 ps-5 pe-5" disabled={isDeleting}>
+                    {isDeleting && <ButtonSpinner/>}
                     Delete
                   </button>
                 </div>

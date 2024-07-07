@@ -2,6 +2,8 @@ import React, {useCallback, useEffect, useState} from 'react';
 import axiosApi from '../../axiosApi';
 import {Meal, times} from '../../types';
 import {useNavigate, useParams} from 'react-router-dom';
+import ButtonSpinner from '../../components/Spinner/ButtonSpinner';
+import Spinner from '../../components/Spinner/Spinner';
 
 const initialState: Meal = {
   time: '',
@@ -12,13 +14,17 @@ const initialState: Meal = {
 const AddMeal = () => {
   const {id} = useParams<{ id: string }>();
   const [meal, setMeal] = useState<Meal>(initialState);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const fetchOneMeal = useCallback(async (id: string) => {
+    setIsLoading(true);
     const response = await axiosApi.get<Meal | null>(`meals/${id}.json`);
     if (response.data) {
       setMeal(response.data);
     }
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
@@ -48,6 +54,7 @@ const AddMeal = () => {
     };
 
     try {
+      setIsSaving(true)
       if (id !== undefined) {
         await axiosApi.put(`/meals/${id}.json`, newMeal);
       } else {
@@ -56,11 +63,15 @@ const AddMeal = () => {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsSaving(false);
     }
   };
 
   return (
     <div className="row mt-3">
+      {isLoading && (<Spinner/>)}
+      {!isLoading && (
       <div className="col">
         <form onSubmit={onFormSubmit}>
           <h2>{id ? 'Edit the meal' : 'Add a new meal'}</h2>
@@ -104,11 +115,12 @@ const AddMeal = () => {
             />
             <span>kcal</span>
           </div>
-          <button type="submit" className="btn btn-primary mt-3 ps-5 pe-5">
+          <button type="submit" className="btn btn-primary mt-3 ps-5 pe-5" disabled={isSaving}>
+            {isSaving && <ButtonSpinner />}
             {id ? 'Save changes' : 'Save'}
           </button>
         </form>
-      </div>
+      </div>)}
     </div>
   );
 };
